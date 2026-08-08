@@ -102,7 +102,7 @@ pipeline {
                     if (isUnix()) {
                         sh '''
                             for i in $(seq 1 12); do
-                                if curl -s -f http://localhost:8080/ > /dev/null; then
+                                if curl -s -f http://localhost:8081/ > /dev/null; then
                                     echo "Application is UP and Healthy!"
                                     exit 0
                                 fi
@@ -114,7 +114,7 @@ pipeline {
                         '''
                     } else {
                         bat '''
-                            powershell -Command "$success = $false; for ($i=1; $i -le 12; $i++) { try { $res = Invoke-WebRequest -Uri 'http://localhost:8080/' -UseBasicParsing -TimeoutSec 3; if ($res.StatusCode -eq 200) { Write-Host 'Application is UP and Healthy!'; $success = $true; break } } catch { Write-Host 'Waiting for application...' }; Start-Sleep -Seconds 5 }; if (-not $success) { exit 1 }"
+                            powershell -Command "$success = $false; for ($i=1; $i -le 12; $i++) { try { $res = Invoke-WebRequest -Uri 'http://localhost:8081/' -UseBasicParsing -TimeoutSec 3; if ($res.StatusCode -eq 200) { Write-Host 'Application is UP and Healthy!'; $success = $true; break } } catch { Write-Host 'Waiting for application...' }; Start-Sleep -Seconds 5 }; if (-not $success) { exit 1 }"
                         '''
                     }
                 }

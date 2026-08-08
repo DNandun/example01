@@ -56,8 +56,8 @@ docker-compose up --build
 ```
 
 Access the application:
-- **Web UI Dashboard**: [http://localhost:8080](http://localhost:8080)
-- **REST API Base URL**: `http://localhost:8080/api/v1/students`
+- **Web UI Dashboard**: [http://localhost:8081](http://localhost:8081)
+- **REST API Base URL**: `http://localhost:8081/api/v1/students`
 
 To stop and remove containers:
 ```bash
