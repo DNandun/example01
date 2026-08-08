@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font (Outfit & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --bg-card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --badge-active-bg: rgba(16, 185, 129, 0.15);
+            --badge-active-color: #34d399;
+            --badge-grad-bg: rgba(99, 102, 241, 0.15);
+            --badge-grad-color: #818cf8;
+            --badge-inactive-bg: rgba(239, 68, 68, 0.15);
+            --badge-inactive-color: #f87171;
+            --shadow-glow: 0 10px 30px -10px rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .logo-title h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-title p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+            box-shadow: 0 14px 35px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--bg-card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+        }
+
+        /* Analytics Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.35rem;
+        }
+
+        .icon-blue { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+        .icon-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .icon-purple { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+        .icon-pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .stat-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Alert / Messages */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        /* Table Card & Filter Controls */
+        .content-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--bg-card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 10px;
+            padding: 0.4rem 0.85rem;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .search-box i {
+            color: var(--text-muted);
+            margin-right: 0.5rem;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.4);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--bg-card-border);
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--bg-card-border);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .student-name {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-active { background: var(--badge-active-bg); color: var(--badge-active-color); }
+        .badge-graduated { background: var(--badge-grad-bg); color: var(--badge-grad-color); }
+        .badge-inactive { background: var(--badge-inactive-bg); color: var(--badge-inactive-color); }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 540px;
+            padding: 1.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 10px;
+            padding: 0.65rem 0.85rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .form-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="logo-title">
+                <h1>Student Management System</h1>
+                <p>Spring Boot JPA & Docker Powered Enterprise System</p>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="openModal()">
+            <i class="fa-solid fa-plus"></i> Add New Student
+        </button>
+    </header>
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span th:text="${successMessage}">Success message</span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span th:text="${errorMessage}">Error message</span>
+    </div>
+
+    <!-- Analytics Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon icon-blue">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3 th:text="${totalStudents}">0</h3>
+                <p>Total Enrolled</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-green">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="stat-info">
+                <h3 th:text="${activeCount}">0</h3>
+                <p>Active Students</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-purple">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+                <h3 th:text="${avgGpa}">0.00</h3>
+                <p>Average GPA</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon icon-pink">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="stat-info">
+                <h3 th:text="${deptCount}">0</h3>
+                <p>Departments</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Table Card -->
+    <div class="content-card">
+        <div class="card-header">
+            <h2>Student Directory</h2>
+            <form th:action="@{/}" method="get" class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Search name, email, or department..." onchange="this.form.submit()">
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table th:if="${not #lists.isEmpty(students)}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Age</th>
+                        <th>GPA</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="student : ${students}">
+                        <td th:text="${'#' + student.id}">#1</td>
+                        <td>
+                            <div class="student-name">
+                                <div class="avatar" th:text="${#strings.substring(student.firstName, 0, 1) + #strings.substring(student.lastName, 0, 1)}">AM</div>
+                                <div>
+                                    <strong th:text="${student.firstName + ' ' + student.lastName}">Alex Morgan</strong>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="${student.email}">alex@university.edu</td>
+                        <td th:text="${student.department}">Computer Science</td>
+                        <td th:text="${student.age}">21</td>
+                        <td>
+                            <strong style="color: #34d399;" th:text="${student.gpa}">3.85</strong>
+                        </td>
+                        <td>
+                            <span th:if="${student.status == 'ACTIVE'}" class="badge badge-active"><i class="fa-solid fa-circle-dot"></i> Active</span>
+                            <span th:if="${student.status == 'GRADUATED'}" class="badge badge-graduated"><i class="fa-solid fa-graduation-cap"></i> Graduated</span>
+                            <span th:if="${student.status == 'INACTIVE'}" class="badge badge-inactive"><i class="fa-solid fa-circle-pause"></i> Inactive</span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn btn-secondary btn-sm"
+                                        th:data-id="${student.id}"
+                                        th:data-firstname="${student.firstName}"
+                                        th:data-lastname="${student.lastName}"
+                                        th:data-email="${student.email}"
+                                        th:data-department="${student.department}"
+                                        th:data-age="${student.age}"
+                                        th:data-gpa="${student.gpa}"
+                                        th:data-status="${student.status}"
+                                        onclick="editStudent(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                                </button>
+                                <a th:href="@{'/students/delete/' + ${student.id}}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to delete this student record?');">
+                                    <i class="fa-solid fa-trash-can"></i> Delete
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(students)}" class="empty-state">
+                <i class="fa-solid fa-folder-open"></i>
+                <p>No student records found matching your criteria.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Form -->
+<div class="modal-overlay" id="studentModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Add New Student</h2>
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form th:action="@{/students/save}" th:object="${student}" method="post">
+            <input type="hidden" id="studentId" th:field="*{id}">
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required placeholder="e.g. John">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required placeholder="e.g. Doe">
+                </div>
+                <div class="form-group full-width">
+                    <label>Email Address</label>
+                    <input type="email" id="email" th:field="*{email}" class="form-control" required placeholder="e.g. john.doe@university.edu">
+                </div>
+                <div class="form-group full-width">
+                    <label>Department</label>
+                    <input type="text" id="department" th:field="*{department}" class="form-control" required placeholder="e.g. Computer Science">
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" id="age" th:field="*{age}" class="form-control" min="16" max="100" placeholder="18 - 100">
+                </div>
+                <div class="form-group">
+                    <label>GPA (0.00 - 4.00)</label>
+                    <input type="number" step="0.01" id="gpa" th:field="*{gpa}" class="form-control" min="0" max="4" placeholder="3.50">
+                </div>
+                <div class="form-group full-width">
+                    <label>Status</label>
+                    <select id="status" th:field="*{status}" class="form-control">
+                        <option value="ACTIVE">ACTIVE</option>
+                        <option value="GRADUATED">GRADUATED</option>
+                        <option value="INACTIVE">INACTIVE</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        document.getElementById('modalTitle').innerText = 'Add New Student';
+        document.getElementById('studentId').value = '';
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('department').value = '';
+        document.getElementById('age').value = '';
+        document.getElementById('gpa').value = '';
+        document.getElementById('status').value = 'ACTIVE';
+        document.getElementById('studentModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('studentModal').classList.remove('active');
+    }
+
+    function editStudent(button) {
+        document.getElementById('modalTitle').innerText = 'Edit Student Record';
+        document.getElementById('studentId').value = button.getAttribute('data-id');
+        document.getElementById('firstName').value = button.getAttribute('data-firstname');
+        document.getElementById('lastName').value = button.getAttribute('data-lastname');
+        document.getElementById('email').value = button.getAttribute('data-email');
+        document.getElementById('department').value = button.getAttribute('data-department');
+        document.getElementById('age').value = button.getAttribute('data-age');
+        document.getElementById('gpa').value = button.getAttribute('data-gpa');
+        document.getElementById('status').value = button.getAttribute('data-status');
+        document.getElementById('studentModal').classList.add('active');
+    }
+</script>
+</body>
+</html>
