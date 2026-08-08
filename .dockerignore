@@ -3,7 +3,8 @@
 .mvn
 mvnw
 mvnw.cmd
-target
+target/*
+!target/*.jar
 .idea
 *.iml
 HELP.md
