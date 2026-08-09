@@ -18,6 +18,8 @@ pipeline {
         DOCKER_TAG        = "${BUILD_NUMBER}"
         REPO_URL          = 'https://github.com/DNandun/example01.git'
         REGISTRY_CRED_ID  = 'docker-hub-credentials' // Configure in Jenkins Credentials if pushing to registry
+        SONAR_CRED_ID     = 'example01'              // SonarQube token credential ID in Jenkins
+        SONAR_HOST_URL    = 'http://localhost:9000'   // Update if SonarQube is hosted elsewhere
     }
 
     stages {
@@ -44,6 +46,37 @@ pipeline {
                 always {
                     // Publish Maven JUnit test results in Jenkins UI
                     junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Running SonarQube static code analysis...'
+                withCredentials([string(credentialsId: env.SONAR_CRED_ID, variable: 'SONAR_TOKEN')]) {
+                    script {
+                        def sonarCmd = isUnix() ? './mvnw' : 'mvnw.cmd'
+                        def hostUrl  = env.SONAR_HOST_URL ?: 'http://localhost:9000'
+                        def sonarArgs = "org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=example01 -Dsonar.host.url=${hostUrl} -Dsonar.token=${SONAR_TOKEN} -Dsonar.login=${SONAR_TOKEN}"
+
+                        try {
+                            // Try using Jenkins SonarQube environment wrapper if configured
+                            withSonarQubeEnv() {
+                                if (isUnix()) {
+                                    sh "${sonarCmd} ${sonarArgs}"
+                                } else {
+                                    bat "${sonarCmd} ${sonarArgs}"
+                                }
+                            }
+                        } catch (Exception e) {
+                            echo "withSonarQubeEnv step not configured or failed (${e.message}), executing direct SonarScanner analysis..."
+                            if (isUnix()) {
+                                sh "${sonarCmd} ${sonarArgs}"
+                            } else {
+                                bat "${sonarCmd} ${sonarArgs}"
+                            }
+                        }
+                    }
                 }
             }
         }
